@@ -32,6 +32,12 @@ function change-name {
     Write-Output "$(Get-Date) clone complete" | Out-file C:\log.txt -append
  }
 
+ function run-bb {
+    Set-Location C:\BadBlood
+    Write-Output "$(Get-Date) running BadBlood" | Out-file C:\log.txt -append
+    ./Invoke-BadBlood.ps1 -NonInteractive
+    Write-Output "$(Get-Date) BadBlood run complete" | Out-file C:\log.txt -append
+ }
 
  if (Test-Path C:\stepfile){
      if (Test-Path C:\stepfile\1.txt){
@@ -51,6 +57,10 @@ function change-name {
         Remove-Item 'C:\stepfile\5.txt'
         Restart-Computer
      }
+     if (Test-Path C:\stepfile\6.txt){
+        run-bb
+        Remove-Item 'C:\stepfile\6.txt'
+     }
  }else{
      New-Item -Path 'C:\stepfile' -ItemType Directory
      New-Item 'C:\stepfile\1.txt'
@@ -58,5 +68,6 @@ function change-name {
      New-Item 'C:\stepfile\3.txt'
      New-Item 'C:\stepfile\4.txt'
      New-Item 'C:\stepfile\5.txt'
+     New-Item 'C:\stepfile\6.txt'
      change-name
  }
