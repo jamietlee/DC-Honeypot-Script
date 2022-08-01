@@ -25,6 +25,12 @@ function change-name {
      Write-Output "$(Get-Date) create-domain complete" | Out-file C:\log.txt -append
  }
 
+ function clone-bb {
+    Write-Output "$(Get-Date) clone starting" | Out-file C:\log.txt -append
+    git clone https://github.com/davidprowe/BadBlood.git
+    Write-Output "$(Get-Date) clone complete" | Out-file C:\log.txt -append
+ }
+
 
  if (Test-Path C:\stepfile){
      if (Test-Path C:\stepfile\1.txt){
@@ -40,6 +46,7 @@ function change-name {
         Remove-Item 'C:\stepfile\4.txt'
      }
      if (Test-Path C:\stepfile\5.txt){
+        clone-bb
         Remove-Item 'C:\stepfile\5.txt'
         Restart-Computer
      }
