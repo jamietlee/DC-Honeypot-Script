@@ -26,6 +26,7 @@ function change-name {
  }
 
  function clone-bb {
+    Set-Location C:\
     Write-Output "$(Get-Date) clone starting" | Out-file C:\log.txt -append
     git clone https://github.com/davidprowe/BadBlood.git
     Write-Output "$(Get-Date) clone complete" | Out-file C:\log.txt -append
