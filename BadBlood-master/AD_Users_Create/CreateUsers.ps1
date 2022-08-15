@@ -265,7 +265,7 @@
         
         
     #Need to figure out how to do the L attribute
-    $description = 'Created with secframe.com/badblood.'
+    $description = ''
     $pwd = New-SWRandomPassword -MinPasswordLength 22 -MaxPasswordLength 25
     #======================================================================
     # 
