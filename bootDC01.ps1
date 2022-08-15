@@ -76,7 +76,7 @@ function change-name {
         Remove-Item 'C:\stepfile\4.txt'
      }
      if (Test-Path C:\stepfile\5.txt){
-        clone-bb
+        #clone-bb
         Remove-Item 'C:\stepfile\5.txt'
         Restart-Computer
      }
