@@ -54,7 +54,7 @@ foreach ($name in $TopLevelOUs) {
                     if ($adminsubou -eq 'Tier 0'){$adminOUPrefix = "T0-"}
                     elseif ($adminsubou -eq 'Tier 1'){$adminOUPrefix = "T1-"}
                     elseif ($adminsubou -eq 'Tier 2'){$adminOUPrefix = "T2-"}
-                    $adminobjectoucombo = $adminOUPrefix + $adminobjectou
+                    $adminobjectoucombo = $adminOUPrefix + $adminobjectou-
 
                     New-ADOrganizationalUnit -Name $adminobjectoucombo -Path $adminsubfulldn
                 }
