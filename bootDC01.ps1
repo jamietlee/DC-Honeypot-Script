@@ -33,7 +33,7 @@ function change-name {
  }
 
  function run-bb {
-    Set-Location C:\BadBlood
+    Set-Location C:\DC-Honeypot-Script\BadBlood-master
     Write-Output "$(Get-Date) running BadBlood" | Out-file C:\log.txt -append
     ./Invoke-BadBlood.ps1 -NonInteractive
     Write-Output "$(Get-Date) BadBlood run complete" | Out-file C:\log.txt -append
