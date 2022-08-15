@@ -39,6 +39,29 @@ function change-name {
     Write-Output "$(Get-Date) BadBlood run complete" | Out-file C:\log.txt -append
  }
 
+ function run-deception {
+   Set-Location C:\
+   Write-Output "$(Get-Date) cloning deploy-deception" | Out-file C:\log.txt -append
+   git clone https://github.com/samratashok/Deploy-Deception.git
+   Write-Output "$(Get-Date) deploy-deception clone complete" | Out-file C:\log.txt -append
+   Set-Location C:/Deploy-Deception
+   Write-Output "$(Get-Date) importing deploy-deception module" | Out-file C:\log.txt -append
+   Import-Module C:\Deploy-Deception\Deploy-Deception.ps1
+   Write-Output "$(Get-Date) importing users csv" | Out-file C:\log.txt -append
+   $users = import-csv C:\DC-Honeypot-Script\honeyusers.csv
+
+   Write-Output "$(Get-Date) creating honeyusers" | Out-file C:\log.txt -append
+   foreach ($user in $users) {
+      $firstname = $user.UserFirstName
+      $lastname = $user.UserLastName
+      $password = $user.Password
+  
+      Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -UserFlag PasswordNeverExpires -Verbose
+      Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
+  }
+  Write-Output "$(Get-Date) Honey user creation complete" | Out-file C:\log.txt -append
+}
+
  if (Test-Path C:\stepfile){
      if (Test-Path C:\stepfile\1.txt){
          change-name
@@ -61,6 +84,11 @@ function change-name {
         run-bb
         Remove-Item 'C:\stepfile\6.txt'
      }
+     if (Test-Path C:\stepfile\7.txt){
+      run-deception
+      Remove-Item 'C:\stepfile\7.txt'
+   }
+
  }else{
      New-Item -Path 'C:\stepfile' -ItemType Directory
      New-Item 'C:\stepfile\1.txt'
@@ -69,5 +97,6 @@ function change-name {
      New-Item 'C:\stepfile\4.txt'
      New-Item 'C:\stepfile\5.txt'
      New-Item 'C:\stepfile\6.txt'
+     New-Item 'C:\stepfile\7.txt'
      change-name
  }
