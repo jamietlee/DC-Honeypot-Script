@@ -5,16 +5,16 @@ function Get-ScriptDirectory {
 }
 $scriptPath = Get-ScriptDirectory
 
-$TopLevelOUs = @('IT Operations', 'IT Helpdesk','Finance','Marketing', 'Human Resources', 'FOF')
+$TopLevelOUs = @('IT Operations', 'IT Helpdesk', 'Finance', 'Marketing', 'Human Resources', 'FOH')
     
-$AdminSubOUs = @() 
+$AdminSubOUs = @('Tier 0', 'Tier 1', 'Tier 2', 'Staging') 
     #loop before the ou name by making T#-OBJECT name as the OU
-$AdminobjectOUs = @() 
+$AdminobjectOUs = @('Accounts', 'Servers', 'Devices', 'Permissions','Roles') 
 #########################
-$skipSubOUs = @('IT Operations', 'IT Helpdesk','Finance','Marketing', 'Human Resources', 'FOF')
+$skipSubOUs = @('Deprovision', 'Quarantine', 'Groups')
 #########################
 #$tierOUs = @('Tier 1', 'Tier 2')
-$ObjectSubOUs = @()
+$ObjectSubOUs = @('ServiceAccounts', 'Groups', 'Devices','Test')
 
 
 #Consodated list of all 3 letter codes which IAM uses. 
@@ -39,31 +39,31 @@ foreach ($name in $TopLevelOUs) {
     #ROUND:2
     #Create First level Down Sub OUs in Privileged Access, and Provisioned Users
     #=====================================================================================
-    if ($name -eq $TopLevelOUs[0]) {
+    # if ($name -eq $TopLevelOUs[0]) {
 
-        foreach ($adminsubou in $AdminSubOUs) {
-            New-ADOrganizationalUnit -Name $adminsubou -Path $fulldn
-            $adminsubfulldn = "OU=" + $adminsubou + "," + $fulldn
+    #     foreach ($adminsubou in $AdminSubOUs) {
+    #         New-ADOrganizationalUnit -Name $adminsubou -Path $fulldn
+    #         $adminsubfulldn = "OU=" + $adminsubou + "," + $fulldn
                     
-            if ($adminsubou -eq "Staging") {                          
-            }     
+    #         if ($adminsubou -eq "Staging") {                          
+    #         }     
                                  
-            else {
-                foreach ($AdminobjectOU in $AdminobjectOUs) {
-                    #add name together
-                    if ($adminsubou -eq 'Tier 0'){$adminOUPrefix = "T0-"}
-                    elseif ($adminsubou -eq 'Tier 1'){$adminOUPrefix = "T1-"}
-                    elseif ($adminsubou -eq 'Tier 2'){$adminOUPrefix = "T2-"}
-                    $adminobjectoucombo = $adminOUPrefix + $adminobjectou-
+    #         else {
+    #             foreach ($AdminobjectOU in $AdminobjectOUs) {
+    #                 #add name together
+    #                 if ($adminsubou -eq 'Tier 0'){$adminOUPrefix = "T0-"}
+    #                 elseif ($adminsubou -eq 'Tier 1'){$adminOUPrefix = "T1-"}
+    #                 elseif ($adminsubou -eq 'Tier 2'){$adminOUPrefix = "T2-"}
+    #                 $adminobjectoucombo = $adminOUPrefix + $adminobjectou
 
-                    New-ADOrganizationalUnit -Name $adminobjectoucombo -Path $adminsubfulldn
-                }
-            }
-        }
-    }
-    elseif ($skipSubOUs -contains $name) {
-        #this skips the creation of the sub containers
-    }
+    #                 New-ADOrganizationalUnit -Name $adminobjectoucombo -Path $adminsubfulldn
+    #             }
+    #         }
+    #     }
+    # }
+    # elseif ($skipSubOUs -contains $name) {
+    #     #this skips the creation of the sub containers
+    # }
     # elseif (($name -eq 'Tier 1') -or ($name -eq 'Tier 2') -or ($name -eq 'Stage')) {
     #     $fulldn = "OU=" + $name + "," + $dn 
     #     $csvlist = @()
