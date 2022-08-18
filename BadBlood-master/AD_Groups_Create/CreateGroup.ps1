@@ -95,7 +95,7 @@ Function CreateGroup {
         }
         
         $ownerinfo = get-random $userlist
-        $Description = "User Group Created by Badblood github.com/davidprowe/badblood"
+        $Description = ""
         
         <#
         ================================
