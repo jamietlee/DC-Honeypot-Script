@@ -238,22 +238,14 @@
     #=======================================================================
     
     #will work on adding things to containers later $ousall += get-adobject -Filter {objectclass -eq 'container'} -ResultSetSize 300|where-object -Property objectclass -eq 'container'|where-object -Property distinguishedname -notlike "*}*"|where-object -Property distinguishedname -notlike  "*DomainUpdates*"
-    
-    function getou {
-        $ouLocation = (Get-Random $OUsAll).distinguishedname
-        if ($ouLocation == 'Domain Controllers'){
-            getou
-        }
-        return $ouLocation
-    }
-
-    $ouLocation = getou
+      
+    $ouLocation = (Get-Random $OUsAll).distinguishedname
 
     $accountType = 1..100|get-random 
     if($accountType -le 3){ # X percent chance of being a service account
     #service
     $nameSuffix = "SA"
-    $description = 'Created with secframe.com/badblood.'
+    $description = ''
     #removing do while loop and making random number range longer, sorry if the account is there already
     # this is so that I can attempt to import multithreading on user creation
     
@@ -272,7 +264,7 @@
         
         
     #Need to figure out how to do the L attribute
-    $description = 'Created with secframe.com/badblood.'
+    $description = ''
     $pwd = New-SWRandomPassword -MinPasswordLength 22 -MaxPasswordLength 25
     #======================================================================
     # 

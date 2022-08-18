@@ -371,7 +371,7 @@ Function CreateComputer{
                                 write-host `n
                                 write-host "New-ADComputer -server $setdc -Name $CompName -DisplayName $CompName -Enabled $true -path $ou -ManagedBy $manager -owner $owner -SAMAccountName $sam"
                                 write-host `n}
-                                $description = 'Created with secframe.com/badblood.'
+                                $description = ''
             #something is up with system containers i  pull in earlier.  try the random path.  if doesnt work set to default computer container
                                 try{New-ADComputer -server $setdc -Name $CompName -DisplayName $CompName -Enabled $true -path $ou -ManagedBy $manager -SAMAccountName $sam -Description $Description}
                                 catch{New-ADComputer -server $setdc -Name $CompName -DisplayName $CompName -Enabled $true -ManagedBy $manager -SAMAccountName $sam -Description $Description}
