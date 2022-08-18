@@ -1,38 +1,4 @@
 ﻿Function CreateUser{
-
-    <#
-        .SYNOPSIS
-            Creates a user in an active directory environment based on random data
-        
-        .DESCRIPTION
-            Starting with the root container this tool randomly places users in the domain.
-        
-        .PARAMETER Domain
-            The stored value of get-addomain is used for this.  It is used to call the PDC and other items in the domain
-        
-        .PARAMETER OUList
-            The stored value of get-adorganizationalunit -filter *.  This is used to place users in random locations.
-        
-        .PARAMETER ScriptDir
-            The location of the script.  Pulling this into a parameter to attempt to speed up processing.
-        
-        .EXAMPLE
-            
-     
-        
-        .NOTES
-            
-            
-            Unless required by applicable law or agreed to in writing, software
-            distributed under the License is distributed on an "AS IS" BASIS,
-            WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-            See the License for the specific language governing permissions and
-            limitations under the License.
-            
-            Author's blog: https://www.secframe.com
-    
-        
-    #>
     [CmdletBinding()]
     
     param
@@ -93,46 +59,7 @@
     
     
     function New-SWRandomPassword {
-        <#
-        .Synopsis
-           Generates one or more complex passwords designed to fulfill the requirements for Active Directory
-        .DESCRIPTION
-           Generates one or more complex passwords designed to fulfill the requirements for Active Directory
-        .EXAMPLE
-           New-SWRandomPassword
-           C&3SX6Kn
-    
-           Will generate one password with a length between 8  and 12 chars.
-        .EXAMPLE
-           New-SWRandomPassword -MinPasswordLength 8 -MaxPasswordLength 12 -Count 4
-           7d&5cnaB
-           !Bh776T"Fw
-           9"C"RxKcY
-           %mtM7#9LQ9h
-    
-           Will generate four passwords, each with a length of between 8 and 12 chars.
-        .EXAMPLE
-           New-SWRandomPassword -InputStrings abc, ABC, 123 -PasswordLength 4
-           3ABa
-    
-           Generates a password with a length of 4 containing atleast one char from each InputString
-        .EXAMPLE
-           New-SWRandomPassword -InputStrings abc, ABC, 123 -PasswordLength 4 -FirstChar abcdefghijkmnpqrstuvwxyzABCEFGHJKLMNPQRSTUVWXYZ
-           3ABa
-    
-           Generates a password with a length of 4 containing atleast one char from each InputString that will start with a letter from 
-           the string specified with the parameter FirstChar
-        .OUTPUTS
-           [String]
-        .NOTES
-           Written by Simon WÃ¥hlin, blog.simonw.se
-           I take no responsibility for any issues caused by this script.
-        .FUNCTIONALITY
-           Generates random passwords
-        .LINK
-           http://blog.simonw.se/powershell-generating-random-password-for-active-directory/
-       
-        #>
+        
         [CmdletBinding(DefaultParameterSetName='FixedLength',ConfirmImpact='None')]
         [OutputType([String])]
         Param
@@ -288,7 +215,7 @@
         return $true
     }
 
-    new-aduser -server $setdc  -Description $Description -DisplayName $name -name $name -SamAccountName $name -Surname $name -Enabled $true -Path $ouLocation -AccountPassword (ConvertTo-SecureString ($pwd) -AsPlainText -force)
+    new-aduser -server $setdc  -Description $Description -DisplayName $name -name $name -SamAccountName $name -GivenName $givenname -Surname $surname -Enabled $true -Path $ouLocation -AccountPassword (ConvertTo-SecureString ($pwd) -AsPlainText -force)
     
     
     
