@@ -39,11 +39,22 @@ function change-name {
     Write-Output "$(Get-Date) BadBlood run complete" | Out-file C:\log.txt -append
  }
 
- function run-userdeception {
+ function run-groupdeception {
    Set-Location C:\
    Write-Output "$(Get-Date) cloning deploy-deception" | Out-file C:\log.txt -append
    git clone https://github.com/samratashok/Deploy-Deception.git
    Write-Output "$(Get-Date) deploy-deception clone complete" | Out-file C:\log.txt -append
+   Set-Location C:/Deploy-Deception
+   Write-Output "$(Get-Date) importing deploy-deception module" | Out-file C:\log.txt -append
+   Import-Module C:\Deploy-Deception\Deploy-Deception.ps1
+
+   # Create decoy rdp group where alert is triggered when membership of group is read
+   Create-DecoyGroup -GroupName 'RDPAccess' -Verbose | Deploy-GroupDeception -GUID bc0ac240-79a9-11d0-9020-00c04fc2d4cf -Verbose
+   Write-Output "$(Get-Date) RDP decoy group created" | Out-file C:\log.txt -append
+
+   Write-Output "$(Get-Date) Group decoy creation complete" | Out-file C:\log.txt -append
+}
+ function run-userdeception {
    Set-Location C:/Deploy-Deception
    Write-Output "$(Get-Date) importing deploy-deception module" | Out-file C:\log.txt -append
    Import-Module C:\Deploy-Deception\Deploy-Deception.ps1
@@ -62,16 +73,24 @@ function change-name {
       # Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -UserFlag PasswordNeverExpires -Verbose
       # Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
 
-      Triggers logging only when x500uniqueIdentifier property is read
-      Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -RemoveAuditing $true -UserFlag PasswordNeverExpires -GUID d07da11f-8a3d-42b6-b0aa-76c962be719a -Verbose
-      Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
+      # Triggers logging only when x500uniqueIdentifier property is read
+      if($department = 'IT Helpdesk'){
+         Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-PrivilegedUserDeception -Technique DomainAdminsMembership -Protection DenyLogon -Right ReadControl -Verbose
+         Write-Output "$(Get-Date) $firstname $surname privileged user created" | Out-file C:\log.txt -append
+      }else{
+         Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -RemoveAuditing $true -UserFlag PasswordNeverExpires -GUID d07da11f-8a3d-42b6-b0aa-76c962be719a -Verbose
+         Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
 
+      }
+      
       Get-ADUser -Identity $name | Set-AdUser -GivenName $firstname -Surname $lastname -Description $description
       Write-Output "$(Get-Date) set attributes for $name" | Out-file C:\log.txt -append
 
       Move-ADObject -Identity "CN=$name,CN=Users,DC=testdomain,DC=local" -TargetPath "OU=$department,DC=testdomain,DC=local"
       Write-Output "$(Get-Date) moved $name to $department" | Out-file C:\log.txt -append
-      
+
+      Add-ADGroupMember -Identity RDP -Members $name
+      Write-Output "$(Get-Date) added $name to RDP decoy group" | Out-file C:\log.txt -append
 
       # Logs a 4662 log only when DACL (or all attributes) of a user are read
       # Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -UserFlag AllowReversiblePasswordEncryption -Right ReadControl -Verbose
