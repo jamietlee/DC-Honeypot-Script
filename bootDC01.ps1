@@ -148,13 +148,16 @@ function run-computerdeception {
         Remove-Item 'C:\stepfile\6.txt'
      }
      if (Test-Path C:\stepfile\7.txt){
-         run-userdeception
-         Remove-Item 'C:\stepfile\7.txt'
-     }
+      run-groupdeception
+      Remove-Item 'C:\stepfile\7.txt'
+   }
      if (Test-Path C:\stepfile\8.txt){
-         run-computerdeception
+         run-userdeception
          Remove-Item 'C:\stepfile\8.txt'
-     
+     }
+     if (Test-Path C:\stepfile\9.txt){
+         run-computerdeception
+         Remove-Item 'C:\stepfile\9.txt'     
    }
 
  }else{
@@ -167,5 +170,6 @@ function run-computerdeception {
      New-Item 'C:\stepfile\6.txt'
      New-Item 'C:\stepfile\7.txt'
      New-Item 'C:\stepfile\8.txt'
+     New-Item 'C:\stepfile\9.txt'
      change-name
  }
