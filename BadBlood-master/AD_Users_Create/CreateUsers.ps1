@@ -184,7 +184,7 @@
         # Write-Host $surname
     $genderpreference = 0,1|get-random
     if ($genderpreference -eq 0){$givenname = get-content("$($scriptpath)\Names\femalenames-usa-top1000.txt")|get-random}else{$givenname = get-content($scriptpath + '\Names\malenames-usa-top1000.txt')|get-random}
-    $name = $givenname+"_"+$surname
+    $name = $givenname + $surname
     }
     
         $departmentnumber = [convert]::ToInt32('9999999') 
