@@ -39,7 +39,7 @@ function change-name {
     Write-Output "$(Get-Date) BadBlood run complete" | Out-file C:\log.txt -append
  }
 
- function run-deception {
+ function run-userdeception {
    Set-Location C:\
    Write-Output "$(Get-Date) cloning deploy-deception" | Out-file C:\log.txt -append
    git clone https://github.com/samratashok/Deploy-Deception.git
@@ -55,11 +55,41 @@ function change-name {
       $firstname = $user.UserFirstName
       $lastname = $user.UserLastName
       $password = $user.Password
-  
-      Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -UserFlag PasswordNeverExpires -Verbose
+      
+      # Log a 4662 whenever user properties are read
+      # Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -UserFlag PasswordNeverExpires -Verbose
+      # Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
+
+      Triggers logging only when x500uniqueIdentifier property is read
+      Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -RemoveAuditing $true -UserFlag PasswordNeverExpires -GUID d07da11f-8a3d-42b6-b0aa-76c962be719a -Verbose
       Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
+
+      # Logs a 4662 log only when DACL (or all attributes) of a user are read
+      # Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -UserFlag AllowReversiblePasswordEncryption -Right ReadControl -Verbose
+      # Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
   }
   Write-Output "$(Get-Date) Honey user creation complete" | Out-file C:\log.txt -append
+}
+
+function run-computerdeception {
+   Set-Location C:/Deploy-Deception
+   Write-Output "$(Get-Date) importing deploy-deception module" | Out-file C:\log.txt -append
+   Import-Module C:\Deploy-Deception\Deploy-Deception.ps1
+   Write-Output "$(Get-Date) importing computers csv" | Out-file C:\log.txt -append
+   $computers = import-csv C:\DC-Honeypot-Script\honeycomputers.csv
+
+   Write-Output "$(Get-Date) creating honeycomputers" | Out-file C:\log.txt -append
+   foreach ($computer in $computers) {
+      $name = $computer.ComputerName
+      
+      Create-DecoyComputer -ComputerName $name -Verbose | Deploy-ComputerDeception -PropertyFlag TrustedForDelegation -GUID d07da11f-8a3d-42b6-b0aa-76c962be719a -Verbose
+      Write-Output "$(Get-Date) $name created" | Out-file C:\log.txt -append
+      # Log a 4662 whenever user properties are read
+      # Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -UserFlag PasswordNeverExpires -Verbose
+      # Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
+
+  }
+  Write-Output "$(Get-Date) Honey computer creation complete" | Out-file C:\log.txt -append
 }
 
  if (Test-Path C:\stepfile){
@@ -85,8 +115,13 @@ function change-name {
         Remove-Item 'C:\stepfile\6.txt'
      }
      if (Test-Path C:\stepfile\7.txt){
-      run-deception
-      Remove-Item 'C:\stepfile\7.txt'
+         run-userdeception
+         Remove-Item 'C:\stepfile\7.txt'
+     }
+     if (Test-Path C:\stepfile\8.txt){
+         run-computerdeception
+         Remove-Item 'C:\stepfile\8.txt'
+     
    }
 
  }else{
@@ -98,5 +133,6 @@ function change-name {
      New-Item 'C:\stepfile\5.txt'
      New-Item 'C:\stepfile\6.txt'
      New-Item 'C:\stepfile\7.txt'
+     New-Item 'C:\stepfile\8.txt'
      change-name
  }

@@ -1,23 +1,3 @@
-<#
-    .Synopsis
-       Generates users, groups, OUs, computers in an active directory domain.  Then places ACLs on random OUs
-    .DESCRIPTION
-       This tool is for research purposes and training only.  Intended only for personal use.  This adds a large number of objects into a domain, and should never be  run in production.
-    .EXAMPLE
-       There are currently no parameters for the tool.  Simply run the ps1 as a DA and it begins. Follow the prompts and type 'badblood' when appropriate and the tool runs.
-    .OUTPUTS
-       [String]
-    .NOTES
-       Written by David Rowe, Blog secframe.com
-       Twitter : @davidprowe
-       I take no responsibility for any issues caused by this script.  I am not responsible if this gets run in a production domain. 
-      Thanks HuskyHacks for user/group/computer count modifications.  I moved them to parameters so that this tool can be called in a more rapid fashion.
-    .FUNCTIONALITY
-       Adds a ton of stuff into a domain.  Adds Users, Groups, OUs, Computers, and a vast amount of ACLs in a domain.
-    .LINK
-       http://www.secframe.com/badblood
-   
-    #>
 [CmdletBinding()]
     
 param
