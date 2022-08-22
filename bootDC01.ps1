@@ -55,6 +55,10 @@ function change-name {
    Write-Output "$(Get-Date) Group decoy creation complete" | Out-file C:\log.txt -append
 }
  function run-userdeception {
+   Set-Location C:\
+   Write-Output "$(Get-Date) cloning deploy-deception" | Out-file C:\log.txt -append
+   git clone https://github.com/samratashok/Deploy-Deception.git
+   Write-Output "$(Get-Date) deploy-deception clone complete" | Out-file C:\log.txt -append
    Set-Location C:/Deploy-Deception
    Write-Output "$(Get-Date) importing deploy-deception module" | Out-file C:\log.txt -append
    Import-Module C:\Deploy-Deception\Deploy-Deception.ps1
@@ -148,7 +152,7 @@ function run-computerdeception {
         Remove-Item 'C:\stepfile\6.txt'
      }
      if (Test-Path C:\stepfile\7.txt){
-      run-groupdeception
+      #run-groupdeception
       Remove-Item 'C:\stepfile\7.txt'
    }
      if (Test-Path C:\stepfile\8.txt){
