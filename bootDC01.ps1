@@ -78,15 +78,18 @@ function change-name {
       # Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
 
       # Triggers logging only when x500uniqueIdentifier property is read
-      if($department = 'IT Helpdesk'){
-         Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-PrivilegedUserDeception -Technique DomainAdminsMembership -Protection DenyLogon -Right ReadControl -Verbose
-         Write-Output "$(Get-Date) $firstname $surname privileged user created" | Out-file C:\log.txt -append
-      }else{
-         Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -RemoveAuditing $true -UserFlag PasswordNeverExpires -GUID d07da11f-8a3d-42b6-b0aa-76c962be719a -Verbose
-         Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
+      # if($department = 'IT Helpdesk'){
+      #    Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-PrivilegedUserDeception -Technique DomainAdminsMembership -Protection DenyLogon -Right ReadControl -Verbose
+      #    Write-Output "$(Get-Date) $firstname $surname privileged user created" | Out-file C:\log.txt -append
+      # }else{
+      #    Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -RemoveAuditing $true -UserFlag PasswordNeverExpires -GUID d07da11f-8a3d-42b6-b0aa-76c962be719a -Verbose
+      #    Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
 
-      }
+      # }
       
+      Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -RemoveAuditing $true -UserFlag PasswordNeverExpires -GUID d07da11f-8a3d-42b6-b0aa-76c962be719a -Verbose
+      Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
+
       Get-ADUser -Identity $name | Set-AdUser -GivenName $firstname -Surname $lastname -Description $description
       Write-Output "$(Get-Date) set attributes for $name" | Out-file C:\log.txt -append
 
