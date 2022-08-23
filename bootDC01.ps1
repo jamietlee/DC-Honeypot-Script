@@ -1,3 +1,4 @@
+# Changes the host name of the EC2 instance
 function change-name {
     Write-Output "$(Get-Date) change-name called" | Out-file C:\log.txt -append
     Rename-Computer -NewName DC01
@@ -5,6 +6,7 @@ function change-name {
     Restart-Computer
  }
  
+ # Install active directory domain services
  function install-ad {
     Write-Output "$(Get-Date) install-ad called" | Out-file C:\log.txt -append
      "Installing AD-Domain-Services"
@@ -14,6 +16,7 @@ function change-name {
      Write-Output "$(Get-Date) install-ad complete" | Out-file C:\log.txt -append
  }
  
+ # Create the domain - rename 'testdomain' here.
  function create-domain {
     Write-Output "$(Get-Date) create-domain called" | Out-file C:\log.txt -append
      "Converting secure password"
@@ -25,6 +28,7 @@ function change-name {
      Write-Output "$(Get-Date) create-domain complete" | Out-file C:\log.txt -append
  }
 
+ # Clone BadBlood repo to the C: drive
  function clone-bb {
     Set-Location C:\
     Write-Output "$(Get-Date) clone starting" | Out-file C:\log.txt -append
@@ -32,6 +36,7 @@ function change-name {
     Write-Output "$(Get-Date) clone complete" | Out-file C:\log.txt -append
  }
 
+ # Run bad blood to populate active directory
  function run-bb {
     Set-Location C:\DC-Honeypot-Script\BadBlood-master
     Write-Output "$(Get-Date) running BadBlood" | Out-file C:\log.txt -append
@@ -54,7 +59,9 @@ function change-name {
 
    Write-Output "$(Get-Date) Group decoy creation complete" | Out-file C:\log.txt -append
 }
- function run-userdeception {
+
+# Run Deploy-Deception and deploy honey users from honeyusers.csv into the active directory
+function run-userdeception {
    Set-Location C:\
    Write-Output "$(Get-Date) cloning deploy-deception" | Out-file C:\log.txt -append
    git clone https://github.com/samratashok/Deploy-Deception.git
