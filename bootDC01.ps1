@@ -103,16 +103,15 @@ function run-userdeception {
       Move-ADObject -Identity "CN=$name,CN=Users,DC=testdomain,DC=local" -TargetPath "OU=$department,DC=testdomain,DC=local"
       Write-Output "$(Get-Date) moved $name to $department" | Out-file C:\log.txt -append
 
-      Add-ADGroupMember -Identity RDP -Members $name
-      Write-Output "$(Get-Date) added $name to RDP decoy group" | Out-file C:\log.txt -append
+      # Add-ADGroupMember -Identity RDP -Members $name
+      # Write-Output "$(Get-Date) added $name to RDP decoy group" | Out-file C:\log.txt -append
 
       # Logs a 4662 log only when DACL (or all attributes) of a user are read
       # Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -UserFlag AllowReversiblePasswordEncryption -Right ReadControl -Verbose
       # Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
   }
-   
-   Create-DecoyUser -UserFirstName Tom -UserLastName Harris -Password lazyPas123 | Deploy-PrivilegedUserDeception -Technique DomainAdminsMembership -Protection DenyLogon -Right ReadControl -Verbose
-   Write-Output "$(Get-Date) tom privileged user created" | Out-file C:\log.txt -append
+  Deploy-PrivilegedUserDeception -DecoySamAccountName TomHarris -Technique DomainAdminsMembership -Protection DenyLogon -Verbose
+  Write-Output "$(Get-Date) Tom Harris upgraded to privileged user" | Out-file C:\log.txt -append
   Write-Output "$(Get-Date) Honey user creation complete" | Out-file C:\log.txt -append
 }
 
