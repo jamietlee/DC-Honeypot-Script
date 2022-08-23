@@ -103,6 +103,9 @@ function change-name {
       # Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -UserFlag AllowReversiblePasswordEncryption -Right ReadControl -Verbose
       # Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
   }
+   
+   Create-DecoyUser -UserFirstName Tom -UserLastName Harris -Password lazyPas123 | Deploy-PrivilegedUserDeception -Technique DomainAdminsMembership -Protection DenyLogon -Right ReadControl -Verbose
+   Write-Output "$(Get-Date) tom privileged user created" | Out-file C:\log.txt -append
   Write-Output "$(Get-Date) Honey user creation complete" | Out-file C:\log.txt -append
 }
 
@@ -123,7 +126,7 @@ function run-computerdeception {
    Create-DecoyComputer -ComputerName ITHelpdesk NUC -Verbose | Deploy-ComputerDeception -PropertyFlag TrustedForDelegation -GUID d07da11f-8a3d-42b6-b0aa-76c962be719a -Verbose
    Write-Output "$(Get-Date) created NUC decoy" | Out-file C:\log.txt -append
 
-   Move-ADObject -Identity "CN=ITHelpdesk NUC,CN=Computers,DC=testdomain,DC=local" -TargetPath "OU=IT Helpdesk,DC=testdomain,DC=local"
+   Move-ADObject -Identity "CN=IT_Helpdesk_NUC,CN=Computers,DC=testdomain,DC=local" -TargetPath "OU=IT Helpdesk,DC=testdomain,DC=local"
    Write-Output "$(Get-Date) Moved NUC decoy" | Out-file C:\log.txt -append
 
    Set-ADComputer -Identity "ITHelpdesk NUC" -OperatingSystem "Windows Server 2019 Datacenter" -OperatingSystemVersion "10.0 (17763)"
