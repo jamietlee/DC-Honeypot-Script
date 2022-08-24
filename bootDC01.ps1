@@ -110,7 +110,8 @@ function run-userdeception {
       # Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -UserFlag AllowReversiblePasswordEncryption -Right ReadControl -Verbose
       # Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
   }
-  Deploy-PrivilegedUserDeception -DecoySamAccountName TomHarris -Technique DomainAdminsMembership -Protection DenyLogon -Verbose
+  
+  Deploy-PrivilegedUserDeception -DecoySamAccountName TomHarris -Technique DomainAdminsMemebership -Protection DenyLogon -Verbose
   Write-Output "$(Get-Date) Tom Harris upgraded to privileged user" | Out-file C:\log.txt -append
   Write-Output "$(Get-Date) Honey user creation complete" | Out-file C:\log.txt -append
 }
