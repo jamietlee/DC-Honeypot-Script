@@ -44,22 +44,6 @@ function change-name {
     Write-Output "$(Get-Date) BadBlood run complete" | Out-file C:\log.txt -append
  }
 
- function run-groupdeception {
-   Set-Location C:\
-   Write-Output "$(Get-Date) cloning deploy-deception" | Out-file C:\log.txt -append
-   git clone https://github.com/samratashok/Deploy-Deception.git
-   Write-Output "$(Get-Date) deploy-deception clone complete" | Out-file C:\log.txt -append
-   Set-Location C:/Deploy-Deception
-   Write-Output "$(Get-Date) importing deploy-deception module" | Out-file C:\log.txt -append
-   Import-Module C:\Deploy-Deception\Deploy-Deception.ps1
-
-   # Create decoy rdp group where alert is triggered when membership of group is read
-   Create-DecoyGroup -GroupName 'RDPAccess' -Verbose | Deploy-GroupDeception -GUID bc0ac240-79a9-11d0-9020-00c04fc2d4cf -Verbose
-   Write-Output "$(Get-Date) RDP decoy group created" | Out-file C:\log.txt -append
-
-   Write-Output "$(Get-Date) Group decoy creation complete" | Out-file C:\log.txt -append
-}
-
 # Run Deploy-Deception and deploy honey users from honeyusers.csv into the active directory
 function run-userdeception {
    Set-Location C:\
@@ -110,17 +94,18 @@ function run-userdeception {
       # Create-DecoyUser -UserFirstName $firstname -UserLastName $lastname -Password $password | Deploy-UserDeception -UserFlag AllowReversiblePasswordEncryption -Right ReadControl -Verbose
       # Write-Output "$(Get-Date) $firstname $surname created" | Out-file C:\log.txt -append
   }
-  
+
   Deploy-PrivilegedUserDeception -DecoySamAccountName TomHarris -Technique DomainAdminsMemebership -Protection DenyLogon -Verbose
   Write-Output "$(Get-Date) Tom Harris upgraded to privileged user" | Out-file C:\log.txt -append
   Write-Output "$(Get-Date) Honey user creation complete" | Out-file C:\log.txt -append
 }
 
-function run-computerdeception {
+function run-computerandgroupdeception {
    Set-Location C:/Deploy-Deception
    Write-Output "$(Get-Date) importing deploy-deception module" | Out-file C:\log.txt -append
    Import-Module C:\Deploy-Deception\Deploy-Deception.ps1
-   
+   $users = import-csv C:\DC-Honeypot-Script\honeyusers.csv
+
    Create-DecoyComputer -ComputerName DC02 -Verbose | Deploy-ComputerDeception -PropertyFlag TrustedForDelegation -GUID d07da11f-8a3d-42b6-b0aa-76c962be719a -Verbose
    Write-Output "$(Get-Date) created DC02 decoy" | Out-file C:\log.txt -append
 
@@ -130,16 +115,26 @@ function run-computerdeception {
    Set-ADComputer -Identity "DC02" -OperatingSystem "Windows Server 2019 Datacenter" -OperatingSystemVersion "10.0 (17763)"
    Write-Output "$(Get-Date) Updated DC02 attributes" | Out-file C:\log.txt -append
 
-   Create-DecoyComputer -ComputerName ITHelpdesk NUC -Verbose | Deploy-ComputerDeception -PropertyFlag TrustedForDelegation -GUID d07da11f-8a3d-42b6-b0aa-76c962be719a -Verbose
+   Create-DecoyComputer -ComputerName IT_Helpdesk_NUC -Verbose | Deploy-ComputerDeception -PropertyFlag TrustedForDelegation -GUID d07da11f-8a3d-42b6-b0aa-76c962be719a -Verbose
    Write-Output "$(Get-Date) created NUC decoy" | Out-file C:\log.txt -append
 
    Move-ADObject -Identity "CN=IT_Helpdesk_NUC,CN=Computers,DC=testdomain,DC=local" -TargetPath "OU=IT Helpdesk,DC=testdomain,DC=local"
    Write-Output "$(Get-Date) Moved NUC decoy" | Out-file C:\log.txt -append
 
-   Set-ADComputer -Identity "ITHelpdesk NUC" -OperatingSystem "Windows Server 2019 Datacenter" -OperatingSystemVersion "10.0 (17763)"
+   Set-ADComputer -Identity "IT_Helpdesk_NUC" -OperatingSystem "Windows Server 2019 Datacenter" -OperatingSystemVersion "10.0 (17763)"
    Write-Output "$(Get-Date) Updated NUC attributes" | Out-file C:\log.txt -append
 
-   Write-Output "$(Get-Date) Honey computer creation complete" | Out-file C:\log.txt -append
+   Create-DecoyGroup -GroupName 'RDPAccess' -Verbose | Deploy-GroupDeception -GUID bc0ac240-79a9-11d0-9020-00c04fc2d4cf -Verbose
+   Write-Output "$(Get-Date) RDP decoy group created" | Out-file C:\log.txt -append
+
+   foreach ($user in $users) {
+      $firstname = $user.UserFirstName
+      $lastname = $user.UserLastName
+      $name = $firstname + $lastname
+
+      Add-ADGroupMember -Identity RDPAccess -Members $name
+      Write-Output "$(Get-Date) added $name to RDP decoy group" | Out-file C:\log.txt -append
+   }
 }
 
  if (Test-Path C:\stepfile){
@@ -165,18 +160,13 @@ function run-computerdeception {
         Remove-Item 'C:\stepfile\6.txt'
      }
      if (Test-Path C:\stepfile\7.txt){
-      #run-groupdeception
+      run-userdeception
       Remove-Item 'C:\stepfile\7.txt'
-   }
+   }     
      if (Test-Path C:\stepfile\8.txt){
-         run-userdeception
+         run-computerandgroupdeception
          Remove-Item 'C:\stepfile\8.txt'
      }
-     if (Test-Path C:\stepfile\9.txt){
-         run-computerdeception
-         Remove-Item 'C:\stepfile\9.txt'     
-   }
-
  }else{
      New-Item -Path 'C:\stepfile' -ItemType Directory
      New-Item 'C:\stepfile\1.txt'
@@ -187,6 +177,5 @@ function run-computerdeception {
      New-Item 'C:\stepfile\6.txt'
      New-Item 'C:\stepfile\7.txt'
      New-Item 'C:\stepfile\8.txt'
-     New-Item 'C:\stepfile\9.txt'
      change-name
  }
