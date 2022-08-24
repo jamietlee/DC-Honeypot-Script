@@ -168,7 +168,7 @@ if (Test-Path C:\stepfile){
    }     
    if (Test-Path C:\stepfile\8.txt){
       #run-computerandgroupdeception
-      Set-ExecutionPolicy Unrestricted -Force
+      Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Force
       Set-Location C:\DC-Honeypot-Script
       Write-Output "$(Get-Date) calling compandgroupobjects.ps1" | Out-file C:\log.txt -append
       & .\compandgroupobjects.ps1
