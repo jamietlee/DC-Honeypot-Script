@@ -164,7 +164,11 @@ function run-computerandgroupdeception {
       Remove-Item 'C:\stepfile\7.txt'
    }     
      if (Test-Path C:\stepfile\8.txt){
-         run-computerandgroupdeception
+         #run-computerandgroupdeception
+         Set-ExecutionPolicy Unrestricted -Force
+         Write-Output "$(Get-Date) calling compandgroupobjects.ps1" | Out-file C:\log.txt -append
+         .\C:\DC-Honeypot-Script\compandgroupobjects.ps1
+         Write-Output "$(Get-Date) completed compandgroupobjects.ps1" | Out-file C:\log.txt -append
          Remove-Item 'C:\stepfile\8.txt'
      }
  }else{
