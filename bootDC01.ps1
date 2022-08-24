@@ -137,49 +137,52 @@ function run-computerandgroupdeception {
    }
 }
 
- if (Test-Path C:\stepfile){
-     if (Test-Path C:\stepfile\1.txt){
-         change-name
-     }
-     if (Test-Path C:\stepfile\2.txt){
-         install-ad
-     }
-     if (Test-Path C:\stepfile\3.txt){
-        create-domain
-     }
-     if (Test-Path C:\stepfile\4.txt){
-        Remove-Item 'C:\stepfile\4.txt'
-     }
-     if (Test-Path C:\stepfile\5.txt){
-        #clone-bb
-        Remove-Item 'C:\stepfile\5.txt'
-        Restart-Computer
-     }
-     if (Test-Path C:\stepfile\6.txt){
-        run-bb
-        Remove-Item 'C:\stepfile\6.txt'
-     }
-     if (Test-Path C:\stepfile\7.txt){
+# Create a series of files used to establish at what stage the script is at
+# Script checks if file exists:
+# If yes - complete function and then delete file and move on to the next
+# If no - loop through to establish where in the process the script is
+if (Test-Path C:\stepfile){
+   if (Test-Path C:\stepfile\1.txt){
+      change-name
+   }
+   if (Test-Path C:\stepfile\2.txt){
+      install-ad
+   }
+   if (Test-Path C:\stepfile\3.txt){
+      create-domain
+   }
+   if (Test-Path C:\stepfile\4.txt){
+      Remove-Item 'C:\stepfile\4.txt'
+   }
+   if (Test-Path C:\stepfile\5.txt){
+      Remove-Item 'C:\stepfile\5.txt'
+      Restart-Computer
+   }
+   if (Test-Path C:\stepfile\6.txt){
+      run-bb
+      Remove-Item 'C:\stepfile\6.txt'
+   }
+   if (Test-Path C:\stepfile\7.txt){
       run-userdeception
       Remove-Item 'C:\stepfile\7.txt'
    }     
-     if (Test-Path C:\stepfile\8.txt){
-         #run-computerandgroupdeception
-         Set-ExecutionPolicy Unrestricted -Force
-         Write-Output "$(Get-Date) calling compandgroupobjects.ps1" | Out-file C:\log.txt -append
-         .\C:\DC-Honeypot-Script\compandgroupobjects.ps1
-         Write-Output "$(Get-Date) completed compandgroupobjects.ps1" | Out-file C:\log.txt -append
-         Remove-Item 'C:\stepfile\8.txt'
-     }
+   if (Test-Path C:\stepfile\8.txt){
+      #run-computerandgroupdeception
+      Set-ExecutionPolicy Unrestricted -Force
+      Write-Output "$(Get-Date) calling compandgroupobjects.ps1" | Out-file C:\log.txt -append
+      PowerShell .\compandgroupobjects.ps1
+      Write-Output "$(Get-Date) completed compandgroupobjects.ps1" | Out-file C:\log.txt -append
+      Remove-Item 'C:\stepfile\8.txt'
+   }
  }else{
-     New-Item -Path 'C:\stepfile' -ItemType Directory
-     New-Item 'C:\stepfile\1.txt'
-     New-Item 'C:\stepfile\2.txt'
-     New-Item 'C:\stepfile\3.txt'
-     New-Item 'C:\stepfile\4.txt'
-     New-Item 'C:\stepfile\5.txt'
-     New-Item 'C:\stepfile\6.txt'
-     New-Item 'C:\stepfile\7.txt'
-     New-Item 'C:\stepfile\8.txt'
-     change-name
- }
+   New-Item -Path 'C:\stepfile' -ItemType Directory
+   New-Item 'C:\stepfile\1.txt'
+   New-Item 'C:\stepfile\2.txt'
+   New-Item 'C:\stepfile\3.txt'
+   New-Item 'C:\stepfile\4.txt'
+   New-Item 'C:\stepfile\5.txt'
+   New-Item 'C:\stepfile\6.txt'
+   New-Item 'C:\stepfile\7.txt'
+   New-Item 'C:\stepfile\8.txt'
+   change-name
+}
